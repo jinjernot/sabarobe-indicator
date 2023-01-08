@@ -1,5 +1,5 @@
 // This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
-// © norindes
+// © Jinjernot
 
 //@version=4
 study("Sabarobe", overlay=true)
@@ -75,3 +75,22 @@ displayhigh = highesthigh <= high
 displaylow = lowestlow >= low
 plotshape(displayhigh and bearishEC, title="Sell", style=shape.triangledown, color=color.red, size = size.normal)
 plotshape(displaylow and bullishEC, title="Buy", style=shape.triangleup, location=location.belowbar, color=color.green, size = size.normal)
+
+periodK = input(14, title="K", minval=1)
+periodD = input(3, title="D", minval=1)
+smoothK = input(3, title="Smooth", minval=1)
+k = sma(stoch(close, high, low, periodK), smoothK)
+d = sma(k, periodD)
+
+overbought = 80
+oversold = 20
+
+co = crossover(k,d) and k[1] < oversold
+cu = crossunder(k,d) and k[1] > overbought
+coLower = close < valuewhen(co, close, 1)
+coUpper = close < valuewhen(cu, close, 1)
+
+plotshape(co, color = color.green, location = location.belowbar)
+plotshape(cu, color = color.red, location = location.abovebar)
+bgcolor(co and coLower ? color.lime : na)
+bgcolor(cu and coUpper ? color.red : na)
